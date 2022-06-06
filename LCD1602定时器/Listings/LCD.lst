@@ -1,0 +1,146 @@
+C51 COMPILER V9.60.0.0   LCD                                                               03/14/2022 11:07:22 PAGE 1   
+
+
+C51 COMPILER V9.60.0.0, COMPILATION OF MODULE LCD
+OBJECT MODULE PLACED IN .\Objects\LCD.obj
+COMPILER INVOKED BY: C:\Keil_v5\C51\BIN\C51.EXE LCD.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\LCD.l
+                    -st) OBJECT(.\Objects\LCD.obj)
+
+line level    source
+
+   1          #include "reg51.h"
+   2          #include "intrins.h"
+   3          #include "lcd.h"
+   4          #include "main.h"
+   5          
+   6          #define DATA P0 //LCD1602数据输入/输出
+   7          
+   8          sbit W_R = P2^5; //LCD1602
+   9          sbit RS = P2^6;
+  10          sbit E = P2^7;
+  11          
+  12          //检测繁忙
+  13          unsigned char Busy_Check()
+  14          {
+  15   1              unsigned char ucData;
+  16   1              RS = 0;
+  17   1              W_R = 1;
+  18   1              DelayUs(10);    
+  19   1              E = 0;
+  20   1              DelayUs(10);
+  21   1              E = 1;
+  22   1              DelayUs(10);            //模式设为读取忙标志
+  23   1              ucData = DATA;
+  24   1              //返回“1”意味繁忙，返回“0”意味空闲
+  25   1              
+  26   1              return (DATA&0x80); // 1表示忙，0表示空闲
+  27   1      }
+  28          
+  29          //写入指令
+  30          void Com_Write(unsigned char Command)
+  31          {
+  32   1              while(Busy_Check()); //空闲时执行写入命令
+  33   1              
+  34   1              RS = 0;
+  35   1              W_R = 0;  
+  36   1              E = 1;  //模式设为写入指令
+  37   1              DelayUs(10);
+  38   1              DATA = Command;
+  39   1              DelayUs(10);
+  40   1              E = 0;
+  41   1              DelayUs(10);
+  42   1      }
+  43          
+  44          //写入数据
+  45          void Data_Write(unsigned char Data)
+  46          {
+  47   1              while(Busy_Check()); //空闲时执行写入命令
+  48   1              
+  49   1              RS = 1;
+  50   1              W_R = 0;
+  51   1              E = 1;
+  52   1              DelayUs(10);
+  53   1              DATA = Data;
+  54   1              DelayUs(10);
+C51 COMPILER V9.60.0.0   LCD                                                               03/14/2022 11:07:22 PAGE 2   
+
+  55   1              E = 0;
+  56   1              DelayUs(10);
+  57   1      }
+  58          
+  59          //写入字符                                      行                                      列                              字符
+  60          void Char_Write(unsigned char Hang, unsigned char Lie, unsigned char n)
+  61          {
+  62   1              //第1行，及列数
+  63   1              if(Hang == 0)
+  64   1              {
+  65   2                      Com_Write(0x80 + Lie); //设定显示的位置
+  66   2              }
+  67   1              //第2行，及列数
+  68   1              else
+  69   1              {
+  70   2                      Com_Write(0xC0 + Lie);
+  71   2              }
+  72   1              
+  73   1              Data_Write(n); //写入字符'n'的ASCII
+  74   1              
+  75   1      }
+  76          
+  77          //写入字符串
+  78          void String_Write(unsigned char Hang1, unsigned char Lie1, unsigned char *s)
+  79          {
+  80   1      //      RS = 1;
+  81   1      //      W_R = 0; //模式设为写入数据
+  82   1              //第1行，及列数
+  83   1              if(Hang1 == 0)
+  84   1              {
+  85   2                      Com_Write(0x80 + Lie1); //设定显示的位置
+  86   2              }
+  87   1              //第2行，及列数
+  88   1              else
+  89   1              {
+  90   2                      Com_Write(0xC0 + Lie1);
+  91   2              }
+  92   1              
+  93   1              while(*s)
+  94   1              {
+  95   2                      Data_Write(*s);
+  96   2                      s++;
+  97   2              }
+  98   1              
+  99   1      }
+ 100          
+ 101          //清屏
+ 102          void Clear()
+ 103          {
+ 104   1              Com_Write(0x01);
+ 105   1              DelayMs(5);
+ 106   1      }
+ 107          
+ 108          //按要求初始化
+ 109          void Lcd_Init()
+ 110          {
+ 111   1              Com_Write(0x38); //功能：8位总线、2行显示、5*7点阵
+ 112   1              DelayMs(5);
+ 113   1              Com_Write(0x08); //功能：显示屏关显示、不显示光标、光标闪烁
+ 114   1              Com_Write(0x01); //清屏
+ 115   1              Com_Write(0x06); //功能：输入数据时光标右移、输入字符时显示屏全部显示不移动
+ 116   1              DelayMs(5);
+C51 COMPILER V9.60.0.0   LCD                                                               03/14/2022 11:07:22 PAGE 3   
+
+ 117   1              Com_Write(0x0c); //显示屏开显示、不显示光标、光标闪烁
+ 118   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    225    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       9
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
