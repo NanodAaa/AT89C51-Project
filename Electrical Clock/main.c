@@ -1,62 +1,62 @@
 /*
-			DS1302 x LCD1602 Ê±ÖÓ£¬¸½´øÄÖÖÓ¹¦ÄÜ
+			DS1302 x LCD1602 æ—¶é’Ÿï¼Œé™„å¸¦é—¹é’ŸåŠŸèƒ½
+   			NanodAaa 2021/11/9
 */
-
 
 #include "reg51.h"
 #include "LCD1602.h"
 #include "DS1302.h"
 
-bit Keyflag0; //INT0±êÖ¾
-bit Keyflag1; //INT1±êÖ¾
+bit Keyflag0; //INT0æ ‡å¿—
+bit Keyflag1; //INT1æ ‡å¿—
 
-//¶ÀÁ¢°´¼ü
+//ç‹¬ç«‹æŒ‰é”®
 sbit K1 = P3^1;
 sbit K2 = P3^0;
 sbit K3 = P3^2; //INT0
 sbit K4 = P3^3; //INT1
 
-//È«¾ÖÊ±¼ä±äÁ¿
+//å…¨å±€æ—¶é—´å˜é‡
 unsigned char g_sec;
-unsigned char g_sec1; //Ãë1Î»
-unsigned char g_sec2; //Ãë10Î»
+unsigned char g_sec1; //ç§’1ä½
+unsigned char g_sec2; //ç§’10ä½
 unsigned char g_min;
-unsigned char g_min1; //·Ö1Î»
-unsigned char g_min2; //·Ö10Î»
+unsigned char g_min1; //åˆ†1ä½
+unsigned char g_min2; //åˆ†10ä½
 unsigned char g_hou;  
-unsigned char g_hou1; //Ê±1Î»
-unsigned char g_hou2; //Ê±10Î»
+unsigned char g_hou1; //æ—¶1ä½
+unsigned char g_hou2; //æ—¶10ä½
 unsigned char g_day;
-unsigned char g_day1; //ÈÕ1Î»
-unsigned char g_day2; //ÈÕ10Î»
+unsigned char g_day1; //æ—¥1ä½
+unsigned char g_day2; //æ—¥10ä½
 unsigned char g_mon; 
-unsigned char g_mon1; //ÔÂ1Î»
-unsigned char g_mon2; //ÔÂ10Î»
+unsigned char g_mon1; //æœˆ1ä½
+unsigned char g_mon2; //æœˆ10ä½
 unsigned char g_yea;
-unsigned char g_yea1; //Äê1Î»
-unsigned char g_yea2; //Äê10Î»
+unsigned char g_yea1; //å¹´1ä½
+unsigned char g_yea2; //å¹´10ä½
 
-//ÆÁÄ»2´¢´æÊ±¼ä±äÁ¿
-unsigned char s_sec1; //Ãë1Î»
-unsigned char s_sec2; //Ãë10Î»
+//å±å¹•2å‚¨å­˜æ—¶é—´å˜é‡
+unsigned char s_sec1; //ç§’1ä½
+unsigned char s_sec2; //ç§’10ä½
 unsigned char s_sec;
 unsigned char s_min;
-unsigned char s_min1; //·Ö1Î»
-unsigned char s_min2; //·Ö10Î»
+unsigned char s_min1; //åˆ†1ä½
+unsigned char s_min2; //åˆ†10ä½
 unsigned char s_hou;
-unsigned char s_hou1; //Ê±1Î»
-unsigned char s_hou2; //Ê±10Î»
+unsigned char s_hou1; //æ—¶1ä½
+unsigned char s_hou2; //æ—¶10ä½
 unsigned char s_day;
-unsigned char s_day1; //ÈÕ1Î»
-unsigned char s_day2; //ÈÕ10Î»
+unsigned char s_day1; //æ—¥1ä½
+unsigned char s_day2; //æ—¥10ä½
 unsigned char s_mon;
-unsigned char s_mon1; //ÔÂ1Î»
-unsigned char s_mon2; //ÔÂ10Î»
+unsigned char s_mon1; //æœˆ1ä½
+unsigned char s_mon2; //æœˆ10ä½
 unsigned char s_yea;
-unsigned char s_yea1; //Äê1Î»
-unsigned char s_yea2; //Äê10Î»
+unsigned char s_yea1; //å¹´1ä½
+unsigned char s_yea2; //å¹´10ä½
 
-//ÄÖÖÓÊ±¼ä±äÁ¿
+//é—¹é’Ÿæ—¶é—´å˜é‡
 unsigned char a_sec1;
 unsigned char a_sec2;
 unsigned char a_min1;
@@ -86,32 +86,26 @@ void Clock_value_adjust();
 
 void main()
 {
-	//³õÊ¼»¯
+	//åˆå§‹åŒ–
 	//T0_S();
-	Clock_initial_value(); //ÉèÖÃÊ±ÖÓ³õÖµ
+	Clock_initial_value(); //è®¾ç½®æ—¶é’Ÿåˆå€¼
 	INT0_S();
 	INT1_S();
 	lcd1602_init();
 	lcd1602_clear();
 	
-	//Ö÷Ñ­»·
+	//ä¸»å¾ªç¯
 	while(1)
-	{
-		//Ê±¼ä¡¢ÈÕÆÚÏÔÊ¾
-		Clock_display();
-		
-	
-		//Ê±¼äµ÷½Ú
-		Time_Adjust();
-		
-		//ÄÖÖÓÉèÖÃ
-		Alarm_set();
-		
-		DelayMs(50); //ÆÁÄ»Ë¢ĞÂÂÊ 50ms
+	{		
+		Clock_display(); //æ—¶é—´ã€æ—¥æœŸæ˜¾ç¤º		
+		Time_Adjust();	//æ—¶é—´è°ƒèŠ‚
+		Alarm_set();	//é—¹é’Ÿè®¾ç½®	
+		DelayMs(50); //å±å¹•åˆ·æ–°ç‡ 50ms
 	}
 }
 
-//ÆÁÄ»1¡¢2½çÃæ
+
+//å±å¹•1ã€2ç•Œé¢
 void Screen_interface()
 {
 	lcd1602_write_string(0, 0, "Date");
@@ -124,6 +118,7 @@ void Screen_interface()
 	lcd1602_write_char(0, 6, '2');
 	lcd1602_write_char(0, 7, '0');
 }
+
 
 void Screen2_interface()
 {
@@ -138,29 +133,31 @@ void Screen2_interface()
 	lcd1602_write_char(0, 7, '0');
 }
 
-//ÆÁÄ»2Êı×Ö´¢´æ
+
+//å±å¹•2æ•°å­—å‚¨å­˜
 void Screen2_digit_save()
 {
-	s_sec1 = g_sec1; //Ãë1Î»
-	s_sec2 = g_sec2; //Ãë10Î»
+	s_sec1 = g_sec1; //ç§’1ä½
+	s_sec2 = g_sec2; //ç§’10ä½
 
-	s_min1 = g_min1; //·Ö1Î»
-	s_min2 = g_min2; //·Ö10Î»
+	s_min1 = g_min1; //åˆ†1ä½
+	s_min2 = g_min2; //åˆ†10ä½
 
-	s_hou1 = g_hou1; //Ê±1Î»
-	s_hou2 = g_hou2; //Ê±10Î»
+	s_hou1 = g_hou1; //æ—¶1ä½
+	s_hou2 = g_hou2; //æ—¶10ä½
 
-	s_day1 = g_day1; //ÈÕ1Î»
-	s_day2 = g_day2; //ÈÕ10Î»
+	s_day1 = g_day1; //æ—¥1ä½
+	s_day2 = g_day2; //æ—¥10ä½
 
-	s_mon1 = g_mon1; //ÔÂ1Î»
-	s_mon2 = g_mon2; //ÔÂ10Î»
+	s_mon1 = g_mon1; //æœˆ1ä½
+	s_mon2 = g_mon2; //æœˆ10ä½
 
-	s_yea1 = g_yea1; //Äê1Î»
-	s_yea2 = g_yea2; //Äê10Î»
+	s_yea1 = g_yea1; //å¹´1ä½
+	s_yea2 = g_yea2; //å¹´10ä½
 }
 
-//ÆÁÄ»2Êı×ÖÏÔÊ¾
+
+//å±å¹•2æ•°å­—æ˜¾ç¤º
 void Screen2_digit_interface()
 {
 	Screen2_digit_save();
@@ -178,13 +175,14 @@ void Screen2_digit_interface()
 	lcd1602_write_char(0, 9, s_yea2);
 	lcd1602_write_char(0, 8, s_yea1);
 	
-	lcd1602_write_char(1, 15, s_sec1); //¹Ì¶¨Î»ÖÃ£¬±ğ¶¯£¡
+	lcd1602_write_char(1, 15, s_sec1); //å›ºå®šä½ç½®ï¼Œåˆ«åŠ¨ï¼
 }
 
-//ÆÁÄ»3½çÃæ
+
+//å±å¹•3ç•Œé¢
 void Screen3_interface()
 {
-	lcd1602_clear(); //ÇåÆÁ
+	lcd1602_clear(); //æ¸…å±
 	lcd1602_write_string(1, 0, "ALARM");
 	lcd1602_write_string(0, 0, "SET     NanodAaa");
 	lcd1602_write_char(1, 8, '0');
@@ -196,11 +194,12 @@ void Screen3_interface()
 	lcd1602_write_char(1, 10, 0x3a); //':'
 	lcd1602_write_char(1, 13, 0x3a);
 	
-	lcd1602_write_char(1, 15, '0'); //²»Òª¶¯
+	lcd1602_write_char(1, 15, '0'); //ä¸è¦åŠ¨
 	write_lcd1602_command(0x10);
 }
 
-//ÆÁÄ»1Ê±ÖÓ×ÜÏÔÊ¾
+
+//å±å¹•1æ—¶é’Ÿæ€»æ˜¾ç¤º
 void Clock_display()
 {
 	Screen_interface();
@@ -208,103 +207,106 @@ void Clock_display()
 	Date_display();
 }
 
-//µ÷ÓÃds1302ÏÔÊ¾Ê±¼ä
+
+//è°ƒç”¨ds1302æ˜¾ç¤ºæ—¶é—´
 void Time_display()
 {
-	//¶ÁÈ¡ÃëÊı
+	//è¯»å–ç§’æ•°
 	ds1302_write_data(0x8e, 0);
 	g_sec = BCD_to_dat(ds1302_read(0x81)); 
 	ds1302_write_data(0x8e, 0x80);
-	//ÃëÎ»ÏÔÊ¾
+	//ç§’ä½æ˜¾ç¤º
 	g_sec1 = 0x30 + (g_sec % 10);
 	g_sec2 = 0x30 + (g_sec / 10);
 	lcd1602_write_char(1, 15, g_sec1);
 	lcd1602_write_char(1, 14, g_sec2);
 	
-	//¶ÁÈ¡·ÖÊı
+	//è¯»å–åˆ†æ•°
 	ds1302_write_data(0x8e, 0);
 	g_min = BCD_to_dat(ds1302_read(0x83)); 
 	ds1302_write_data(0x8e, 0x80);
-	//·ÖÎ»ÏÔÊ¾
+	//åˆ†ä½æ˜¾ç¤º
 	g_min1 = 0x30 + (g_min % 10);
 	g_min2 = 0x30 + (g_min / 10);
 	lcd1602_write_char(1, 12, g_min1);
 	lcd1602_write_char(1, 11, g_min2);
 	
-	//¶ÁÈ¡Ê±Êı
+	//è¯»å–æ—¶æ•°
 	ds1302_write_data(0x8e, 0);
 	g_hou = BCD_to_dat(ds1302_read(0x85)); 
 	ds1302_write_data(0x8e, 0x80);
-	//Ê±Î»ÏÔÊ¾
+	//æ—¶ä½æ˜¾ç¤º
 	g_hou1 = 0x30 + (g_hou % 10);
 	g_hou2 = 0x30 + (g_hou / 10);
 	lcd1602_write_char(1, 9, g_hou1);
 	lcd1602_write_char(1, 8, g_hou2);
 }
 
-//µ÷ÓÃDS1302ÏÔÊ¾ÈÕÆÚ
+
+//è°ƒç”¨DS1302æ˜¾ç¤ºæ—¥æœŸ
 void Date_display()
 {
-	//¶ÁÈ¡ÈÕÆÚ
+	//è¯»å–æ—¥æœŸ
 	ds1302_write_data(0x8e, 0);
 	g_day = BCD_to_dat(ds1302_read(0x87)); 
 	ds1302_write_data(0x8e, 0x80);
 	
-	//Ïòlcd1602Ğ´ÈëÈÕÆÚ
+	//å‘lcd1602å†™å…¥æ—¥æœŸ
 	g_day1 = 0x30 + (g_day % 10);
 	g_day2 = 0x30 + (g_day / 10);
 	lcd1602_write_char(0, 14, g_day2);
 	lcd1602_write_char(0, 15, g_day1);
 	
-	//¶ÁÈ¡ÔÂ
+	//è¯»å–æœˆ
 	ds1302_write_data(0x8e, 0);
 	g_mon = BCD_to_dat(ds1302_read(0x89)); 
 	ds1302_write_data(0x8e, 0x80);
 	
-	//Ïòlcd1602Ğ´ÈëÔÂ·İ
+	//å‘lcd1602å†™å…¥æœˆä»½
 	g_mon1 = 0x30 + (g_mon % 10);
 	g_mon2 = 0x30 + (g_mon / 10);
 	lcd1602_write_char(0, 11, g_mon2);
 	lcd1602_write_char(0, 12, g_mon1);
 	
-	//¶ÁÈ¡Äê·İ
+	//è¯»å–å¹´ä»½
 	ds1302_write_data(0x8e, 0);
 	g_yea = BCD_to_dat(ds1302_read(0x8d)); 
 	ds1302_write_data(0x8e, 0x80);
 	
-	//Ïòlcd1602Ğ´ÈëÄê·İ
+	//å‘lcd1602å†™å…¥å¹´ä»½
 	g_yea1 = 0x30 + (g_yea % 10);
 	g_yea2 = 0x30 + (g_yea / 10);
 	lcd1602_write_char(0, 9, g_yea2);
 	lcd1602_write_char(0, 8, g_yea1);
 }
 
-//ÄÖÖÓÉèÖÃ
+
+//é—¹é’Ÿè®¾ç½®
 void Alarm_set()
 {
 	if(Keyflag1 == 1)
 	{
-		//ÆÁÄ»Èı
-		lcd1602_alarm_init(); //ÄÖÖÓÉèÖÃ³õÊ¼»¯ÃüÁî
-		Screen3_interface(); //ÆÁÄ»Èı½çÃæ
+		//å±å¹•ä¸‰
+		lcd1602_alarm_init(); //é—¹é’Ÿè®¾ç½®åˆå§‹åŒ–å‘½ä»¤
+		Screen3_interface(); //å±å¹•ä¸‰ç•Œé¢
 		
-		//°´ÏÂK4½øÈëÆÁÄ»Èı
+		//æŒ‰ä¸‹K4è¿›å…¥å±å¹•ä¸‰
 		while(Keyflag1 == 1)
 		{
-			lcd1602_course_move(); //¹â±êÒÆ¶¯Ö¸Áî
-			lcd1602_change_number(); //¸Ä±älcd1602ÆÁÄ»Êı×Ö
+			lcd1602_course_move(); //å…‰æ ‡ç§»åŠ¨æŒ‡ä»¤
+			lcd1602_change_number(); //æ”¹å˜lcd1602å±å¹•æ•°å­—
 			
-			DelayMs(200); //ÉèÖÃÆÁÄ»ÈıË¢ĞÂÆµÂÊ
+			DelayMs(200); //è®¾ç½®å±å¹•ä¸‰åˆ·æ–°é¢‘ç‡
 					
-			//ÔÙ´Î°´ÏÂK4ÍË³öÆÁÄ»3
+			//å†æ¬¡æŒ‰ä¸‹K4é€€å‡ºå±å¹•3
 			if(K4 == 0)
 			{
-				DelayMs(10); //Ïû¶¶
+				DelayMs(10); //æ¶ˆæŠ–
 				if(K4 == 0)
 				{
 					while(K4 == 0);
 					
-					//¶ÁÈ¡Êı¾İ,×÷ÎªÄÖÖÓÏìÁåÊ±¼ä
+					//è¯»å–æ•°æ®,ä½œä¸ºé—¹é’Ÿå“é“ƒæ—¶é—´
 					a_hou1 = read_lcd1602_char(1, 8);
 					a_hou2 = read_lcd1602_char(1, 9);
 					a_min1 = read_lcd1602_char(1, 11);
@@ -312,34 +314,35 @@ void Alarm_set()
 					a_hou1 = read_lcd1602_char(1, 14);
 					a_hou2 = read_lcd1602_char(1, 15);
 					
-					lcd1602_clear(); //ÇåÆÁ
-					write_lcd1602_command(0x0c); //ÏÔÊ¾ÆÁ¿ªÏÔÊ¾¡¢²»ÏÔÊ¾¹â±ê¡¢¹â±êÉÁË¸
-					Keyflag1 = 0; //ÖØÖÃKeyflag1
+					lcd1602_clear(); //æ¸…å±
+					write_lcd1602_command(0x0c); //æ˜¾ç¤ºå±å¼€æ˜¾ç¤ºã€ä¸æ˜¾ç¤ºå…‰æ ‡ã€å…‰æ ‡é—ªçƒ
+					Keyflag1 = 0; //é‡ç½®Keyflag1
 				}
 			}
 		}		
 	}
 }
 
-//µ÷ÕûÊ±ÖÓÊ±¼ä
+
+//è°ƒæ•´æ—¶é’Ÿæ—¶é—´
 void Time_Adjust()
 {
 	if(Keyflag0 == 1)
 	{
-		lcd1602_clear();            //ÇåÆÁ
-		lcd1602_alarm_init();       //¹â±êÉÁË¸
-		Screen2_interface();         //ÆÁÄ»2½çÃæ
-		Screen2_digit_interface();  //ÆÁÄ»2Êı×ÖÏÔÊ¾
+		lcd1602_clear();            //æ¸…å±
+		lcd1602_alarm_init();       //å…‰æ ‡é—ªçƒ
+		Screen2_interface();         //å±å¹•2ç•Œé¢
+		Screen2_digit_interface();  //å±å¹•2æ•°å­—æ˜¾ç¤º
 		write_lcd1602_command(0x10);
 		
 		while(Keyflag0 == 1)
 		{
-			lcd1602_course_move(); //¹â±êÒÆ¶¯Ö¸Áî
-			lcd1602_change_number(); //¸Ä±älcd1602ÆÁÄ»Êı×Ö
+			lcd1602_course_move(); //å…‰æ ‡ç§»åŠ¨æŒ‡ä»¤
+			lcd1602_change_number(); //æ”¹å˜lcd1602å±å¹•æ•°å­—
 			
-			DelayMs(200); //ÉèÖÃÆÁÄ»2Ë¢ĞÂÂÊ
+			DelayMs(200); //è®¾ç½®å±å¹•2åˆ·æ–°ç‡
 			
-			//°´ÏÂK3ÍË³öÆÁÄ»2
+			//æŒ‰ä¸‹K3é€€å‡ºå±å¹•2
 			if(K3 == 0)
 			{
 				DelayMs(10);
@@ -349,8 +352,8 @@ void Time_Adjust()
 					
 					Clock_value_adjust();
 					
-					lcd1602_clear(); //ÇåÆÁ
-					write_lcd1602_command(0x0c); //ÏÔÊ¾ÆÁ¿ªÏÔÊ¾¡¢²»ÏÔÊ¾¹â±ê¡¢¹â±êÉÁË¸
+					lcd1602_clear(); //æ¸…å±
+					write_lcd1602_command(0x0c); //æ˜¾ç¤ºå±å¼€æ˜¾ç¤ºã€ä¸æ˜¾ç¤ºå…‰æ ‡ã€å…‰æ ‡é—ªçƒ
 					Keyflag0 = 0;
 				}
 			}
@@ -358,7 +361,8 @@ void Time_Adjust()
 	}
 }
 
-//¸øÊ±ÖÓĞ´Èëµ÷ÕûºóµÄ³õÖµ
+
+//ç»™æ—¶é’Ÿå†™å…¥è°ƒæ•´åçš„åˆå€¼
 void Clock_value_adjust()
 {
 	s_sec1 = read_lcd1602_char(1, 15);
@@ -373,26 +377,28 @@ void Clock_value_adjust()
 	s_hou2 = read_lcd1602_char(1, 15);
 	s_hou = s_hou1 + s_hou2 * 10;
 	
-	ds1302_write_data(0x8e, 0); //¹Ø±ÕĞ´±£»¤
+	ds1302_write_data(0x8e, 0); //å…³é—­å†™ä¿æŠ¤
 	ds1302_write_data(0x80, s_sec); 
-	ds1302_write_data(0x8e, 0x80); //¿ªÆôĞ´±£»¤
+	ds1302_write_data(0x8e, 0x80); //å¼€å¯å†™ä¿æŠ¤
 }
 
-//Ê±ÖÓ³õÖµÉèÖÃ
+
+//æ—¶é’Ÿåˆå€¼è®¾ç½®
 void Clock_initial_value()
 {
-	ds1302_write_data(0x8e, 0); //¹Ø±ÕĞ´±£»¤
-	ds1302_write_data(0x80, 0x1e); 			 //Ãë³õÖµ
-	ds1302_write_data(0x82, dat_to_BCD(30)); //·Ö³õÖµ
-	ds1302_write_data(0x84, dat_to_BCD(10)); //Ê±³õÖµ
-	ds1302_write_data(0x86, dat_to_BCD(18)); //ÈÕ
-	ds1302_write_data(0x88, dat_to_BCD(3)); //ÔÂ
-	ds1302_write_data(0x8c, dat_to_BCD(22)); //Äê 
-	ds1302_write_data(0x8e, 0x80); //¿ªÆôĞ´±£»¤
+	ds1302_write_data(0x8e, 0); //å…³é—­å†™ä¿æŠ¤
+	ds1302_write_data(0x80, 0x1e); 			 //ç§’åˆå€¼
+	ds1302_write_data(0x82, dat_to_BCD(30)); //åˆ†åˆå€¼
+	ds1302_write_data(0x84, dat_to_BCD(10)); //æ—¶åˆå€¼
+	ds1302_write_data(0x86, dat_to_BCD(18)); //æ—¥
+	ds1302_write_data(0x88, dat_to_BCD(3)); //æœˆ
+	ds1302_write_data(0x8c, dat_to_BCD(22)); //å¹´ 
+	ds1302_write_data(0x8e, 0x80); //å¼€å¯å†™ä¿æŠ¤
 }
 
+
 /*
-//ÄÖÖÓÏìÁå
+//é—¹é’Ÿå“é“ƒ
 void Alarm_start()
 {
 	unsigned char i;
@@ -407,10 +413,7 @@ void Alarm_start()
 */
 
 
-
-
-
-//Íâ²¿ÖĞ¶ÏINT0ÉèÖÃ
+//å¤–éƒ¨ä¸­æ–­INT0è®¾ç½®
 void INT0_S()
 {
 	EA = 1;
@@ -418,7 +421,8 @@ void INT0_S()
 	IT0 = 1;
 }
 
-//Íâ²¿ÖĞ¶ÏINT0¹¦ÄÜ
+
+//å¤–éƒ¨ä¸­æ–­INT0åŠŸèƒ½
 void INT0_Z() interrupt 1
 {
 	if(Keyflag0 == 0)
@@ -427,7 +431,8 @@ void INT0_Z() interrupt 1
 	}	
 }	
 
-//Íâ²¿ÖĞ¶ÏINT1ÉèÖÃ
+
+//å¤–éƒ¨ä¸­æ–­INT1è®¾ç½®
 void INT1_S()
 {
 	EA = 1;
@@ -435,7 +440,8 @@ void INT1_S()
 	IT1 = 1;
 }
 
-//Íâ²¿ÖĞ¶ÏINT1¹¦ÄÜ
+
+//å¤–éƒ¨ä¸­æ–­INT1åŠŸèƒ½
 void INT1_Z() interrupt 2
 {
 	if(Keyflag1 == 0)
@@ -444,11 +450,13 @@ void INT1_Z() interrupt 2
 	}
 }
 
-//ÑÓÊ±º¯Êı
+
+//å»¶æ—¶å‡½æ•°
 void DelayUs(unsigned char tu)
 {
 	while(--tu);
 }
+
 
 void DelayMs(unsigned char tm)
 {
