@@ -1,34 +1,34 @@
 /*
-			Çı¶¯DS1302Ïà¹Øº¯Êı
+			é©±åŠ¨DS1302ç›¸å…³å‡½æ•°
 */
-
 #include "reg51.h"
 #include "main.h"
 #include "DS1302.h"
 
-sbit TIO = P3^4;   //ÊäÈë¡¢Êä³öÒı½Å
-sbit TRST = P3^5;  //Ê¹ÄÜ¶Ë
-sbit TSCLK = P3^6; //ÊäÈëÊ±ÖÓÂö³å
+sbit TIO = P3^4;   //è¾“å…¥ã€è¾“å‡ºå¼•è„š
+sbit TRST = P3^5;  //ä½¿èƒ½ç«¯
+sbit TSCLK = P3^6; //è¾“å…¥æ—¶é’Ÿè„‰å†²
 
-//Ğ´Èë1×Ö½ÚÊı¾İ
+
+//å†™å…¥1å­—èŠ‚æ•°æ®
 void ds1302_write_data(unsigned char cmd, unsigned char dat)
 {
 	unsigned char i;
 	
 	TRST = 0;
 	TSCLK = 0;
-	TRST = 1; //ÉÏÉıÑØÔÊĞíĞ´Êı¾İ
+	TRST = 1; //ä¸Šå‡æ²¿å…è®¸å†™æ•°æ®
 	
-	//Ğ´ÈëÃüÁî
+	//å†™å…¥å‘½ä»¤
 	for(i = 0; i < 8; i++)
 	{
 		TSCLK = 0;
-		TIO = cmd&0x01; //´Ó×îµÍÎ»¿ªÊ¼´«ËÍ
+		TIO = cmd&0x01; //ä»æœ€ä½ä½å¼€å§‹ä¼ é€
 		TSCLK = 1;
 		cmd >>= 1;
 	}
 	
-	//Ğ´ÈëÊı¾İ
+	//å†™å…¥æ•°æ®
 	for(i = 0; i < 8; i++)
 	{
 		TSCLK = 0;
@@ -37,19 +37,19 @@ void ds1302_write_data(unsigned char cmd, unsigned char dat)
 		dat >>= 1; 
 	}
 	
-	TRST = 0; //À­µÍ½ûÖ¹Ğ´Êı¾İ
+	TRST = 0; //æ‹‰ä½ç¦æ­¢å†™æ•°æ®
 }
 
-//¶Á1×Ö½ÚÊı¾İ
+
+//è¯»1å­—èŠ‚æ•°æ®
 unsigned char ds1302_read(unsigned char cmd)
 {
 	unsigned char dat, i;
-	
 	TRST = 0;
 	TSCLK = 0;
-	TRST = 1; //ÉÏÉıÑØÔÊĞíĞ´Êı¾İ
+	TRST = 1; //ä¸Šå‡æ²¿å…è®¸å†™æ•°æ®
 	
-	//Ğ´ÈëÃüÁî
+	//å†™å…¥å‘½ä»¤
 	for(i = 0; i < 8; i++)
 	{
 		TSCLK = 0;
@@ -58,43 +58,40 @@ unsigned char ds1302_read(unsigned char cmd)
 		cmd >>= 1;
 	}
 	
-	//¶Á³öÊı¾İ
+	//è¯»å‡ºæ•°æ®
 	for(i = 0; i < 8; i++)
 	{
 		TSCLK = 0;
 		dat >>= 1;
 		if(TIO)
 		{
-			dat |= 0x80; //°´Î»Òì»ò
+			dat |= 0x80; //æŒ‰ä½å¼‚æˆ–
 		}
 		TSCLK = 1;
 	}
 	
-	TRST = 0; //À­µÍ½ûÖ¹Ğ´Êı¾İ
-	
+	TRST = 0; //æ‹‰ä½ç¦æ­¢å†™æ•°æ®
 	return dat;
 }
 
-//2Î»Êı¾İ×ªBCD
+
+//2ä½æ•°æ®è½¬BCD
 unsigned char dat_to_BCD(unsigned char dat)
 {
-	unsigned char dat1, dat2;
-	
+	unsigned char dat1, dat2;	
 	dat1 = dat / 10;
 	dat2 = dat % 10;
 	dat2 = dat2 + dat1 * 16;
-	
 	return dat2;
 }
 
-//BCD×ª2Î»Êı¾İ
+
+//BCDè½¬2ä½æ•°æ®
 unsigned char BCD_to_dat(unsigned char dat)
 {
 	unsigned char dat1, dat2;
-	
 	dat1 = dat / 16;
 	dat2 = dat % 16;
 	dat2 = dat2 + dat1 * 10;
-	
 	return dat2;
 }
