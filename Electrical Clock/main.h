@@ -1,3 +1,4 @@
-void DelayUs(unsigned char tu); //ÑÓÊ±º¯Êý
+//  NanodAaa 2021/9/11
 
+void DelayUs(unsigned char tu); //Ã‘Ã“ÃŠÂ±ÂºÂ¯ÃŠÃ½
 void DelayMs(unsigned char tm);
