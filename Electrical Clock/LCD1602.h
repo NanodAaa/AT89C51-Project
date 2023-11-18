@@ -1,23 +1,14 @@
-unsigned char Busy_Check(); //¼ì²âLCD1602·±Ã¦
+//  NanodAaa 2021/11/9
 
-void write_lcd1602_command(unsigned char com); //ÏòLCD1602Ğ´ÈëÃüÁî
-
-void lcd1602_write_data(unsigned char dat); //ÏòLCD1602Ğ´ÈëÊı¾İ
-
-void lcd1602_write_char(unsigned char Hang, unsigned char Lie, unsigned char n); //ÏòLCD1602Ğ´Èë×Ö·û
-
-void lcd1602_write_string(unsigned char Hang1, unsigned char Lie1, unsigned char *s); //ÏòLCD1602Ğ´Èë×Ö·û´®
-
-void lcd1602_clear(); //ÇåÆÁ
-
-void lcd1602_init();  //ÏÔÊ¾³õÊ¼»¯
-
-void lcd1602_alarm_init(); //ÄÖÖÓÉèÖÃ³õÊ¼»¯ÃüÁî
-
-void lcd1602_course_move(); //¹â±êÒÆ¶¯Ö¸Áî
-
-void lcd1602_change_number(); //¸Ä±älcd1602ÆÁÄ»Êı×Ö
-
-unsigned char lcd1602_read_data(); //´Ólcd1602ÖĞ¶ÁÈ¡Êı¾İ
-
-unsigned char read_lcd1602_char(unsigned char hang, unsigned char lie); //¶ÁÈ¡×Ö·û
+unsigned char Busy_Check(); //æ£€æµ‹LCD1602ç¹å¿™
+void write_lcd1602_command(unsigned char com); //å‘LCD1602å†™å…¥å‘½ä»¤
+void lcd1602_write_data(unsigned char dat); //å‘LCD1602å†™å…¥æ•°æ®
+void lcd1602_write_char(unsigned char Hang, unsigned char Lie, unsigned char n); //å‘LCD1602å†™å…¥å­—ç¬¦
+void lcd1602_write_string(unsigned char Hang1, unsigned char Lie1, unsigned char *s); //å‘LCD1602å†™å…¥å­—ç¬¦ä¸²
+void lcd1602_clear(); //æ¸…å±
+void lcd1602_init();  //æ˜¾ç¤ºåˆå§‹åŒ–
+void lcd1602_alarm_init(); //é—¹é’Ÿè®¾ç½®åˆå§‹åŒ–å‘½ä»¤
+void lcd1602_course_move(); //å…‰æ ‡ç§»åŠ¨æŒ‡ä»¤
+void lcd1602_change_number(); //æ”¹å˜lcd1602å±å¹•æ•°å­—
+unsigned char lcd1602_read_data(); //ä»lcd1602ä¸­è¯»å–æ•°æ®
+unsigned char read_lcd1602_char(unsigned char hang, unsigned char lie); //è¯»å–å­—ç¬¦
