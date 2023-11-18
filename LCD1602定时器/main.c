@@ -1,5 +1,5 @@
 /*
-		LCD1602¼ÆÊ±Æ÷
+		LCD1602è®¡æ—¶å™¨
 */
 
 #include "reg51.h"
@@ -7,26 +7,25 @@
 #include "lcd.h"
 #include "string.h"
 
+//ç‹¬ç«‹æŒ‰é”®
+sbit K1 = P3^1; //æ—¶é—´+1
+sbit K2 = P3^0; //æ—¶é—´-1
+sbit K3 = P3^2; //è¿›å…¥æ—¶é—´è°ƒæ•´èœå•
+sbit K4 = P3^3; //å…‰æ ‡å·¦ç§»
 
-//¶ÀÁ¢°´¼ü
-sbit K1 = P3^1; //Ê±¼ä+1
-sbit K2 = P3^0; //Ê±¼ä-1
-sbit K3 = P3^2; //½øÈëÊ±¼äµ÷Õû²Ëµ¥
-sbit K4 = P3^3; //¹â±ê×óÒÆ
-
-bit msFlag;  //¶¨Ê±Æ÷T0
+bit msFlag;  //å®šæ—¶å™¨T0
 bit secFlag; 
 bit minFlag;
 bit houFlag;
 bit dayFlag;
 bit monFlag;
 
-bit keyFlag;  //Íâ²¿ÖĞ¶Ï
+bit keyFlag;  //å¤–éƒ¨ä¸­æ–­
 bit recFlag;
 
 unsigned int CLOCK;
 
-unsigned char mss1 = 0x30; //Ê±¼ä²ÎÊı
+unsigned char mss1 = 0x30; //æ—¶é—´å‚æ•°
 unsigned char sec1 = 0x30;
 unsigned char sec2 = 0x30;
 unsigned char min1 = 0x30;
@@ -46,7 +45,7 @@ unsigned char R2_sec2 = 0x30;
 unsigned char R2_min1 = 0x30;
 unsigned char R2_min2 = 0x30;
 
-//ÑÓÊ±º¯Êı
+//å»¶æ—¶å‡½æ•°
 void DelayUs(unsigned char tu)
 {
 	while(--tu);
@@ -61,21 +60,21 @@ void DelayMs(unsigned char tm)
 	}
 }
 
-//T0ÉèÎª16Î»¶¨Ê±Æ÷£¬¶¨Ê±50ms
+//T0è®¾ä¸º16ä½å®šæ—¶å™¨ï¼Œå®šæ—¶50ms
 void T0_S()
 {
 	TMOD = 0x01;
-	TH0 = 70; //¶¨Ê±50ms
+	TH0 = 70; //å®šæ—¶50ms
 	TL0 = 0;
 	EA = 1;
 	ET0 = 1;
 	TR0 = 1;
 }
 
-//¶¨Ê±Æ÷T0¹¦ÄÜ
+//å®šæ—¶å™¨T0åŠŸèƒ½
 void T0_Z(void) interrupt 1 using 1
 {
-	//ÖØÔØ¶¨Ê±Æ÷
+	//é‡è½½å®šæ—¶å™¨
 	TH0 = 70;
 	TL0 = 0;
 	
@@ -88,7 +87,7 @@ void T0_Z(void) interrupt 1 using 1
 	//1s
 	if(CLOCK % 20 == 0)
 	{
-		//Ìø×ªµ½Ïà¹ØµÄÏÔÊ¾º¯Êı
+		//è·³è½¬åˆ°ç›¸å…³çš„æ˜¾ç¤ºå‡½æ•°
 		secFlag = 1;
 	}
 	//1min
@@ -109,7 +108,7 @@ void T0_Z(void) interrupt 1 using 1
 	}
 }
 
-//Íâ²¿ÖĞ¶Ï0ÉèÖÃ
+//å¤–éƒ¨ä¸­æ–­0è®¾ç½®
 void INT0_S()
 {
 	EA = 1;
@@ -117,7 +116,7 @@ void INT0_S()
 	IT0 = 1;
 }
 
-//Íâ²¿ÖĞ¶Ï1ÉèÖÃ
+//å¤–éƒ¨ä¸­æ–­1è®¾ç½®
 void INT1_S()
 {
 	EA = 1;
@@ -125,22 +124,22 @@ void INT1_S()
 	IT1 = 1;
 }
 
-//Íâ²¿ÖĞ¶Ï1¹¦ÄÜ£¬ÏÔÊ¾¼ÇÂ¼µÄÊ±¼ä
+//å¤–éƒ¨ä¸­æ–­1åŠŸèƒ½ï¼Œæ˜¾ç¤ºè®°å½•çš„æ—¶é—´
 void INT1_Z() interrupt 2 using 2
 {
 	recFlag = 1;
 }
 
-//ºÁÃëÎ»ÏÔÊ¾
+//æ¯«ç§’ä½æ˜¾ç¤º
 void Ms_Display()
 {
-	Char_Write(1, 15, mss1); //ºÁÃëÎ»
+	Char_Write(1, 15, mss1); //æ¯«ç§’ä½
 	if(msFlag == 1)
 	{
 		//P2 = P2^0x01;
 		
 		mss1++;
-		Char_Write(1, 15, mss1); //ºÁÃëÎ»
+		Char_Write(1, 15, mss1); //æ¯«ç§’ä½
 		DelayMs(10);
 		
 		
@@ -154,11 +153,11 @@ void Ms_Display()
 	}
 }
 
-//ÃëÎ»ÏÔÊ¾
+//ç§’ä½æ˜¾ç¤º
 void Sec_Display()
 {
-	Char_Write(1, 13, sec1);  //Ãë1Î»
-	Char_Write(1, 12, sec2); //Ãë10Î»
+	Char_Write(1, 13, sec1);  //ç§’1ä½
+	Char_Write(1, 12, sec2); //ç§’10ä½
 	if(secFlag == 1)
 	{
 		sec1++;
@@ -175,11 +174,11 @@ void Sec_Display()
 	}
 }
 
-//·ÖÎ»ÏÔÊ¾
+//åˆ†ä½æ˜¾ç¤º
 void Min_Display()
 {
-	Char_Write(1, 10, min1); //·Ö1Î»
-	Char_Write(1, 9, min2); //·Ö10Î»
+	Char_Write(1, 10, min1); //åˆ†1ä½
+	Char_Write(1, 9, min2); //åˆ†10ä½
 	if(minFlag == 1)
 	{
 		min1++;
@@ -196,7 +195,7 @@ void Min_Display()
 	}
 }
 
-//ÆÁÄ»½çÃæ
+//å±å¹•ç•Œé¢
 void Screen_Init()
 {
 	String_Write(1, 0, "Timer");
@@ -206,28 +205,28 @@ void Screen_Init()
 	Char_Write(1, 14, 0x3a);
 }
 
-//Ê±¼äÏÔÊ¾º¯Êı
+//æ—¶é—´æ˜¾ç¤ºå‡½æ•°
 void Time_Display()
 {
-	Screen_Init(); //ÆÁÄ»½çÃæ
+	Screen_Init(); //å±å¹•ç•Œé¢
 	
-	Ms_Display(); //ºÁÃëÎ»ÏÔÊ¾
-	Sec_Display(); //ÃëÎ»ÏÔÊ¾
-	Min_Display(); //·ÖÎ»ÏÔÊ¾
+	Ms_Display(); //æ¯«ç§’ä½æ˜¾ç¤º
+	Sec_Display(); //ç§’ä½æ˜¾ç¤º
+	Min_Display(); //åˆ†ä½æ˜¾ç¤º
 }
 
-//·ÀÖ¹»­ÃæÉÁË¸
+//é˜²æ­¢ç”»é¢é—ªçƒ
 void Anti_Blink()
 {
-	Screen_Init(); //ÆÁÄ»½çÃæ
-	Char_Write(1, 10, min1); //·Ö1Î»
-	Char_Write(1, 9, min2); //·Ö10Î»
-	Char_Write(1, 13, sec1); //Ãë1Î»
-	Char_Write(1, 12, sec2); //Ãë10Î»
-	Char_Write(1, 15, mss1); //ºÁÃëÎ»
+	Screen_Init(); //å±å¹•ç•Œé¢
+	Char_Write(1, 10, min1); //åˆ†1ä½
+	Char_Write(1, 9, min2); //åˆ†10ä½
+	Char_Write(1, 13, sec1); //ç§’1ä½
+	Char_Write(1, 12, sec2); //ç§’10ä½
+	Char_Write(1, 15, mss1); //æ¯«ç§’ä½
 }
 
-//Íâ²¿ÖĞ¶Ï0¹¦ÄÜ£¬ÔİÍ£¼ÆÊ±Æ÷
+//å¤–éƒ¨ä¸­æ–­0åŠŸèƒ½ï¼Œæš‚åœè®¡æ—¶å™¨
 void INT0_Z() interrupt 0 using 0
 {
 	keyFlag = 1;
@@ -235,7 +234,7 @@ void INT0_Z() interrupt 0 using 0
 	while(keyFlag == 1)
 	{
 		String_Write(0, 0, "Stop");
-	//	DelayMs(200); //Éè¶¨ÆÁÄ»Ë¢ĞÂÂÊ£¡
+	//	DelayMs(200); //è®¾å®šå±å¹•åˆ·æ–°ç‡ï¼
 		if(K2 == 0)
 		{
 			DelayMs(10);
@@ -251,16 +250,15 @@ void INT0_Z() interrupt 0 using 0
 	}
 }
 
-//¼ÇÂ¼µ±Ç°Ê±¼ä
+//è®°å½•å½“å‰æ—¶é—´
 void Time_Record()
 {
-	//°´ÏÂK1¼ÇÂ¼
+	//æŒ‰ä¸‹K1è®°å½•
 	if(K1 == 0)
 	{
 		DelayMs(10);
 		if(K1 == 0)
-		{
-			
+		{			
 			if(rec == 0)
 			{
 				R1_mss1 = mss1;
@@ -281,22 +279,21 @@ void Time_Record()
 			}
 			
 			rec++;
-			if(rec == 2) rec = 0;
-			
+			if(rec == 2) rec = 0;			
 		}
 	}
 }
 
 
-//ÏÔÊ¾¼ÇÂ¼µÄÊ±¼ä
+//æ˜¾ç¤ºè®°å½•çš„æ—¶é—´
 void Record_Display()
 {
 	while(recFlag == 1)
 	{
 		Clear();
 		
-		Time_Record();  //¼ÇÂ¼µ±Ç°Ê±¼ä
-		//µÚÒ»ĞĞ
+		Time_Record();  //è®°å½•å½“å‰æ—¶é—´
+		//ç¬¬ä¸€è¡Œ
 		String_Write(0, 0, "First");
 		Char_Write(0, 8, R1_min2);
 		Char_Write(0, 9, R1_min1);
@@ -306,7 +303,7 @@ void Record_Display()
 		Char_Write(0, 13, 0x3a);
 		Char_Write(0, 14, R1_mss1);
 		
-		//µÚ¶şĞĞ
+		//ç¬¬äºŒè¡Œ
 		String_Write(1, 0, "Second");
 		Char_Write(1, 8, R2_min2);
 		Char_Write(1, 9, R2_min1);
@@ -333,21 +330,21 @@ void Record_Display()
 
 void main()
 {
-	//³õÊ¼»¯
+	//åˆå§‹åŒ–
 	T0_S();	
 	INT0_S();
 	INT1_S();
 	Lcd_Init();
 	Clear();
 	
-	//Ö÷Ñ­»·
+	//ä¸»å¾ªç¯
 	while(1)
 	{
-		Time_Display(); //Ê±¼äÏÔÊ¾
-		//Time_Stop();    //¼ÆÊ±Æ÷ÔİÍ£
-		Time_Record();  //¼ÇÂ¼µ±Ç°Ê±¼ä
-		Record_Display(); //ÏÔÊ¾µ±Ç°Ê±¼ä
+		Time_Display(); //æ—¶é—´æ˜¾ç¤º
+		//Time_Stop();    //è®¡æ—¶å™¨æš‚åœ
+		Time_Record();  //è®°å½•å½“å‰æ—¶é—´
+		Record_Display(); //æ˜¾ç¤ºå½“å‰æ—¶é—´
 		
-		DelayMs(50);   //Ã¿0.01sË¢ĞÂÒ»´ÎÆÁÄ»
+		DelayMs(50);   //æ¯0.01såˆ·æ–°ä¸€æ¬¡å±å¹•
 	}
 }
