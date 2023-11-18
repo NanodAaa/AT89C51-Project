@@ -1,15 +1,18 @@
+// NanodAaa 2021/9/12
+
 #include "reg51.h"
 #include "intrins.h"
 #include "lcd.h"
 #include "main.h"
 
-#define DATA P0 //LCD1602Êı¾İÊäÈë/Êä³ö
+#define DATA P0 //LCD1602æ•°æ®è¾“å…¥/è¾“å‡º
 
 sbit W_R = P2^5; //LCD1602
 sbit RS = P2^6;
 sbit E = P2^7;
 
-//¼ì²â·±Ã¦
+
+//æ£€æµ‹ç¹å¿™
 unsigned char Busy_Check()
 {
 	unsigned char ucData;
@@ -19,21 +22,22 @@ unsigned char Busy_Check()
 	E = 0;
 	DelayUs(10);
 	E = 1;
-	DelayUs(10);		//Ä£Ê½ÉèÎª¶ÁÈ¡Ã¦±êÖ¾
+	DelayUs(10);		//æ¨¡å¼è®¾ä¸ºè¯»å–å¿™æ ‡å¿—
 	ucData = DATA;
-	//·µ»Ø¡°1¡±ÒâÎ¶·±Ã¦£¬·µ»Ø¡°0¡±ÒâÎ¶¿ÕÏĞ
+	//è¿”å›â€œ1â€æ„å‘³ç¹å¿™ï¼Œè¿”å›â€œ0â€æ„å‘³ç©ºé—²
 	
-	return (DATA&0x80); // 1±íÊ¾Ã¦£¬0±íÊ¾¿ÕÏĞ
+	return (DATA&0x80); // 1è¡¨ç¤ºå¿™ï¼Œ0è¡¨ç¤ºç©ºé—²
 }
 
-//Ğ´ÈëÖ¸Áî
+
+//å†™å…¥æŒ‡ä»¤
 void Com_Write(unsigned char Command)
 {
-	while(Busy_Check()); //¿ÕÏĞÊ±Ö´ĞĞĞ´ÈëÃüÁî
+	while(Busy_Check()); //ç©ºé—²æ—¶æ‰§è¡Œå†™å…¥å‘½ä»¤
 	
 	RS = 0;
 	W_R = 0;  
-	E = 1;  //Ä£Ê½ÉèÎªĞ´ÈëÖ¸Áî
+	E = 1;  //æ¨¡å¼è®¾ä¸ºå†™å…¥æŒ‡ä»¤
 	DelayUs(10);
 	DATA = Command;
 	DelayUs(10);
@@ -41,10 +45,11 @@ void Com_Write(unsigned char Command)
 	DelayUs(10);
 }
 
-//Ğ´ÈëÊı¾İ
+
+//å†™å…¥æ•°æ®
 void Data_Write(unsigned char Data)
 {
-	while(Busy_Check()); //¿ÕÏĞÊ±Ö´ĞĞĞ´ÈëÃüÁî
+	while(Busy_Check()); //ç©ºé—²æ—¶æ‰§è¡Œå†™å…¥å‘½ä»¤
 	
 	RS = 1;
 	W_R = 0;
@@ -56,35 +61,37 @@ void Data_Write(unsigned char Data)
 	DelayUs(10);
 }
 
-//Ğ´Èë×Ö·û     					ĞĞ					ÁĞ				×Ö·û
+
+//å†™å…¥å­—ç¬¦     					è¡Œ					åˆ—				å­—ç¬¦
 void Char_Write(unsigned char Hang, unsigned char Lie, unsigned char n)
 {
-	//µÚ1ĞĞ£¬¼°ÁĞÊı
+	//ç¬¬1è¡Œï¼ŒåŠåˆ—æ•°
 	if(Hang == 0)
 	{
-		Com_Write(0x80 + Lie); //Éè¶¨ÏÔÊ¾µÄÎ»ÖÃ
+		Com_Write(0x80 + Lie); //è®¾å®šæ˜¾ç¤ºçš„ä½ç½®
 	}
-	//µÚ2ĞĞ£¬¼°ÁĞÊı
+	//ç¬¬2è¡Œï¼ŒåŠåˆ—æ•°
 	else
 	{
 		Com_Write(0xC0 + Lie);
 	}
 	
-	Data_Write(n); //Ğ´Èë×Ö·û'n'µÄASCII
+	Data_Write(n); //å†™å…¥å­—ç¬¦'n'çš„ASCII
 	
 }
 
-//Ğ´Èë×Ö·û´®
+
+//å†™å…¥å­—ç¬¦ä¸²
 void String_Write(unsigned char Hang1, unsigned char Lie1, unsigned char *s)
 {
 //	RS = 1;
-//	W_R = 0; //Ä£Ê½ÉèÎªĞ´ÈëÊı¾İ
-	//µÚ1ĞĞ£¬¼°ÁĞÊı
+//	W_R = 0; //æ¨¡å¼è®¾ä¸ºå†™å…¥æ•°æ®
+	//ç¬¬1è¡Œï¼ŒåŠåˆ—æ•°
 	if(Hang1 == 0)
 	{
-		Com_Write(0x80 + Lie1); //Éè¶¨ÏÔÊ¾µÄÎ»ÖÃ
+		Com_Write(0x80 + Lie1); //è®¾å®šæ˜¾ç¤ºçš„ä½ç½®
 	}
-	//µÚ2ĞĞ£¬¼°ÁĞÊı
+	//ç¬¬2è¡Œï¼ŒåŠåˆ—æ•°
 	else
 	{
 		Com_Write(0xC0 + Lie1);
@@ -98,21 +105,23 @@ void String_Write(unsigned char Hang1, unsigned char Lie1, unsigned char *s)
 	
 }
 
-//ÇåÆÁ
+
+//æ¸…å±
 void Clear()
 {
 	Com_Write(0x01);
 	DelayMs(5);
 }
 
-//°´ÒªÇó³õÊ¼»¯
+
+//æŒ‰è¦æ±‚åˆå§‹åŒ–
 void Lcd_Init()
 {
-	Com_Write(0x38); //¹¦ÄÜ£º8Î»×ÜÏß¡¢2ĞĞÏÔÊ¾¡¢5*7µãÕó
+	Com_Write(0x38); //åŠŸèƒ½ï¼š8ä½æ€»çº¿ã€2è¡Œæ˜¾ç¤ºã€5*7ç‚¹é˜µ
 	DelayMs(5);
-	Com_Write(0x08); //¹¦ÄÜ£ºÏÔÊ¾ÆÁ¹ØÏÔÊ¾¡¢²»ÏÔÊ¾¹â±ê¡¢¹â±êÉÁË¸
-	Com_Write(0x01); //ÇåÆÁ
-	Com_Write(0x06); //¹¦ÄÜ£ºÊäÈëÊı¾İÊ±¹â±êÓÒÒÆ¡¢ÊäÈë×Ö·ûÊ±ÏÔÊ¾ÆÁÈ«²¿ÏÔÊ¾²»ÒÆ¶¯
+	Com_Write(0x08); //åŠŸèƒ½ï¼šæ˜¾ç¤ºå±å…³æ˜¾ç¤ºã€ä¸æ˜¾ç¤ºå…‰æ ‡ã€å…‰æ ‡é—ªçƒ
+	Com_Write(0x01); //æ¸…å±
+	Com_Write(0x06); //åŠŸèƒ½ï¼šè¾“å…¥æ•°æ®æ—¶å…‰æ ‡å³ç§»ã€è¾“å…¥å­—ç¬¦æ—¶æ˜¾ç¤ºå±å…¨éƒ¨æ˜¾ç¤ºä¸ç§»åŠ¨
 	DelayMs(5);
-	Com_Write(0x0c); //ÏÔÊ¾ÆÁ¿ªÏÔÊ¾¡¢²»ÏÔÊ¾¹â±ê¡¢¹â±êÉÁË¸
+	Com_Write(0x0c); //æ˜¾ç¤ºå±å¼€æ˜¾ç¤ºã€ä¸æ˜¾ç¤ºå…‰æ ‡ã€å…‰æ ‡é—ªçƒ
 }
